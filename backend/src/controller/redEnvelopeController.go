@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"huhusw.com/red_envelope/entity"
+	"huhusw.com/red_envelope/commons"
+	"huhusw.com/red_envelope/models"
 )
 
 /*
@@ -16,11 +17,18 @@ type RedEnvelopeController struct {
 
 //抢红包业务逻辑
 func (con RedEnvelopeController) Snatch(c *gin.Context) {
-	//测试数据库
-	TestDB()
-
+	user := []models.User{}
+	commons.GetDB().Find(&user)
+	for index, value := range user {
+		fmt.Println(index, "  ", value)
+	}
+	val, e := commons.GetRedis().Get(c, "b").Result()
+	if e != nil {
+		panic(e)
+	}
+	fmt.Println("b:", val)
 	//用户实体
-	user := entity.User{}
+	users := models.User{}
 	//接收post的json数据
 	// err := c.ShouldBindBodyWith(&user, binding.JSON)
 	err := c.ShouldBindJSON(&user)
@@ -32,16 +40,16 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	}
 	//数据返回
 	c.JSON(0, map[string]interface{}{
-		"uid": user.Uid,
+		"uid": users.UserId,
 	})
 }
 
 //打开红包业务逻辑
 func (con RedEnvelopeController) Open(c *gin.Context) {
 	//红包实体
-	// envelope := entity.Envelope{}
+	// envelope := models.Envelope{}
 	//用户实体
-	// user := entity.User{}
+	// user := models.User{}
 	//接收post的json数据
 	// err := c.ShouldBindBodyWith(&user, binding.JSON)
 	m := map[string]interface{}{
@@ -65,7 +73,7 @@ func (con RedEnvelopeController) Open(c *gin.Context) {
 //获取钱包列表业务逻辑
 func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 	//用户实体
-	user := entity.User{}
+	user := models.User{}
 	//接收post的json数据
 	// err := c.ShouldBindBodyWith(&user, binding.JSON)
 	err := c.ShouldBindJSON(&user)
@@ -79,11 +87,6 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 	fmt.Println(c.Get("name"))
 	//数据返回
 	c.JSON(0, map[string]interface{}{
-		"uid": user.Uid,
+		"uid": user.UserId,
 	})
-}
-
-//测试数据库
-func (con RedEnvelopeController) Test(c *gin.Context) {
-	TestDB()
 }

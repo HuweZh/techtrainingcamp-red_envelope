@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	_redis "github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -15,17 +16,24 @@ import (
 **/
 
 //具体的数据库连接信息
-type Database struct {
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Name     string `json:"name"`
+type dbSetting struct {
+	User          string `json:"mysql_user"`
+	Password      string `json:"mysql_password"`
+	Host          string `json:"mysql_host"`
+	Port          string `json:"mysql_port"`
+	Name          string `json:"mysql_name"`
+	RedisHost     string `json:"redis_host"`
+	RedisPort     string `json:"redis_port"`
+	RedisPassword string `json:"redis_password"`
 }
 
 //获取数据库信息
-var databaseSetting = &Database{}
+var setting = &dbSetting{}
+
 var db *gorm.DB
+
+//RedisClient ...
+var redisClient *_redis.Client
 
 //初始化函数，结构体加载时调用，将数据库连接信息赋值，并初始化一个数据库连接
 func init() {
@@ -40,10 +48,12 @@ func init() {
 	// 创建json解码器
 	decoder := json.NewDecoder(filePtr)
 	//读取配置文件中的信息
-	err = decoder.Decode(databaseSetting)
+	err = decoder.Decode(setting)
 	if err != nil {
 		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
 	}
+	//创建redis连接
+	initRedis()
 	//初始化一个数据库连接
 	db = newConnection()
 }
@@ -51,11 +61,11 @@ func init() {
 //获取数据库连接，私有方法
 func newConnection() *gorm.DB {
 	var dbUri string = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
-		databaseSetting.User,
-		databaseSetting.Password,
-		databaseSetting.Host,
-		databaseSetting.Port,
-		databaseSetting.Name)
+		setting.User,
+		setting.Password,
+		setting.Host,
+		setting.Port,
+		setting.Name)
 	// 获取数据库连接
 	conn, err := gorm.Open(mysql.Open(dbUri), &gorm.Config{})
 	if err != nil {
@@ -90,4 +100,30 @@ func GetDB() *gorm.DB {
 		db = newConnection()
 	}
 	return db
+}
+
+//InitRedis ...
+func initRedis() {
+	addr := setting.RedisHost + ":" + setting.RedisPort
+	redisClient = _redis.NewClient(&_redis.Options{
+		Addr:     addr,
+		Password: setting.RedisPassword,
+		DB:       0,
+		// DialTimeout:        10 * time.Second,
+		// ReadTimeout:        30 * time.Second,
+		// WriteTimeout:       30 * time.Second,
+		// PoolSize:           10,
+		// PoolTimeout:        30 * time.Second,
+		// IdleTimeout:        500 * time.Millisecond,
+		// IdleCheckFrequency: 500 * time.Millisecond,
+		// TLSConfig: &tls.Config{
+		// 	InsecureSkipVerify: true,
+		// },
+	})
+
+}
+
+//GetRedis ...
+func GetRedis() *_redis.Client {
+	return redisClient
 }

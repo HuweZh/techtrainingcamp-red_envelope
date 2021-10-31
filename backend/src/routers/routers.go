@@ -15,7 +15,4 @@ func RoutersInit(r *gin.Engine) {
 
 	//拆红包路由
 	r.POST("/get_wallet_list", middleware.InitMiddle, controller.RedEnvelopeController{}.GetWalletList)
-
-	//测试数据库
-	// r.GET("/test", controller.RedEnvelopeController{}.Test)
 }
