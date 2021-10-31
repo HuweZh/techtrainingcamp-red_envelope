@@ -11,7 +11,7 @@
  Target Server Version : 80025
  File Encoding         : 65001
 
- Date: 31/10/2021 15:07:08
+ Date: 31/10/2021 17:07:39
 */
 
 SET NAMES utf8mb4;
@@ -25,7 +25,7 @@ CREATE TABLE `envelope`  (
   `envelope_id` bigint NOT NULL COMMENT '红包id',
   `user_id` int NOT NULL COMMENT '用户id',
   `value` int NULL DEFAULT NULL COMMENT '红包金额',
-  `state` int NULL DEFAULT NULL COMMENT '红包的状态，0：未打开，1：已打开',
+  `opened` int NULL DEFAULT NULL COMMENT '红包的状态，0：未打开，1：已打开',
   `snatch_time` int NULL DEFAULT NULL COMMENT '红包获取时间，UNIX时间戳',
   PRIMARY KEY (`envelope_id`, `user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_cs_0900_ai_ci COMMENT = '红包表' ROW_FORMAT = Dynamic;
