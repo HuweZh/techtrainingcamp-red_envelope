@@ -38,10 +38,10 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 		//5.TODO 更新缓存
 		json.Unmarshal([]byte(data), &user)
 		commons.GetRedis().Expire(c, strconv.Itoa(para.Uid), 100*1000000000)
-		fmt.Println(user)
+		// fmt.Println(user)
 	}
 
-	//3.TODO 获取一个红包id
+	//3.获取一个红包id
 	// rand.Seed(time.Now().UnixNano())
 	// envelopeId := rand.Intn(100000) + 1000
 	envelopeId := commons.GetID()
@@ -54,7 +54,13 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	envelope.Opened = 0
 	envelope.Value = 50
 	envelope.SnatchTime = int(time.Now().Unix())
-	models.SaveEnvelope(envelope)
+	var u models.UpdateData
+	u.Type = models.INSERTENVELOPE
+	u.Data = envelope
+
+	models.SetData(u)
+
+	// models.SaveEnvelope(envelope)
 	// models.UpdateCurCount(para.Uid, user.CurCount+1)
 
 	//6.构建返回的数据

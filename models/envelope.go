@@ -1,6 +1,10 @@
 package models
 
-import "huhusw.com/red_envelope/commons"
+import (
+	"time"
+
+	"huhusw.com/red_envelope/commons"
+)
 
 type Envelope struct {
 	EnvelopeId commons.ID `grom:"envelope_id" json:"envelope_id"`
@@ -8,6 +12,26 @@ type Envelope struct {
 	Value      int        `grom:"value" json:"value"`
 	Opened     int        `grom:"opened" json:"opened"`
 	SnatchTime int        `grom:"snatch_time" json:"snatch_time"`
+}
+
+//10s的定时器，用来执行定时任务
+var ticker = time.NewTicker(time.Second * 10)
+
+//批量插入红包的切片
+var envelopes []Envelope
+
+func init() {
+	go func() {
+		//定时执行数据
+		for _ = range ticker.C {
+			// fmt.Printf("ticked at %v", time.Now())
+			if len(envelopes) != 0 {
+				// fmt.Println("定时器任务执行....")
+				commons.GetDB().Create(&envelopes)
+				envelopes = envelopes[0:0]
+			}
+		}
+	}()
 }
 
 //默认操作的是envelopes表
@@ -31,6 +55,12 @@ func UpdateState(id int, open int) {
 	commons.GetDB().Model(&Envelope{}).Where("envelope_id = ?", id).Update("opened", open)
 }
 
+//批量插入红包数据
 func SaveEnvelope(envelope Envelope) {
-	commons.GetDB().Create(envelope)
+	if len(envelopes) < 64 {
+		envelopes = append(envelopes, envelope)
+	} else {
+		commons.GetDB().Create(&envelopes)
+		envelopes = envelopes[0:0]
+	}
 }
