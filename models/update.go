@@ -1,9 +1,5 @@
 package models
 
-import (
-	"fmt"
-)
-
 //常亮，表示更新数据库的类型
 const (
 	INSERTENVELOPE      = 0
@@ -40,7 +36,11 @@ func update() {
 			d := rowData.Data.(Envelope)
 			SaveEnvelope(d)
 		case 1:
-			fmt.Println("case 1")
+			d := rowData.Data.(Envelope)
+			UpdateState(d.EnvelopeId, d.Opened)
+		case 2:
+			d := rowData.Data.(User)
+			UpdateCurCount(d.UserId, d.CurCount)
 		}
 	}
 }

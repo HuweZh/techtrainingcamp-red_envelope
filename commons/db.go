@@ -50,7 +50,7 @@ func init() {
 	//读取配置文件中的信息
 	err = decoder.Decode(setting)
 	if err != nil {
-		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
+		fmt.Printf("json decode error [Err:%s]\n", err.Error())
 	}
 	//创建redis连接
 	initRedis()
@@ -69,7 +69,7 @@ func newConnection() *gorm.DB {
 	// 获取数据库连接
 	conn, err := gorm.Open(mysql.Open(dbUri), &gorm.Config{})
 	if err != nil {
-		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
+		fmt.Printf("mysql connection error [Err:%s]\n", err.Error())
 	}
 	//设置数据库连接池信息
 	setup(conn)
@@ -80,7 +80,7 @@ func newConnection() *gorm.DB {
 func setup(conn *gorm.DB) {
 	sqlDB, err := conn.DB()
 	if err != nil {
-		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
+		fmt.Printf("mysqlDB poll error [Err:%s]\n", err.Error())
 	}
 	sqlDB.SetMaxIdleConns(10)                   //最大空闲连接数
 	sqlDB.SetMaxOpenConns(30)                   //最大连接数
