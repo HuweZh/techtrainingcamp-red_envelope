@@ -2,10 +2,10 @@ package commons
 
 import "github.com/gin-gonic/gin"
 
-func R(c *gin.Context, data map[string]interface{}) {
+func R(c *gin.Context, code int, msg string, data map[string]interface{}) {
 	c.JSON(0, map[string]interface{}{
-		"code": 0,
-		"msg":  "success",
+		"code": code,
+		"msg":  msg,
 		"data": data,
 	})
 }

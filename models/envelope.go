@@ -41,6 +41,10 @@ func (Envelope) TableName() string {
 	return "envelope"
 }
 
+func GetEnve(uid int) Envelope {
+	return Envelope{commons.GetID(), uid, 50, 0, int(time.Now().Unix())}
+}
+
 func GetEnvelope(id int) Envelope {
 	envelope := Envelope{}
 	//从redis缓存汇总获取红包
