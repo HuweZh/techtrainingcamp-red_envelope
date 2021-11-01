@@ -1,6 +1,10 @@
 package models
 
-import "huhusw.com/red_envelope/commons"
+import (
+	"encoding/json"
+
+	"huhusw.com/red_envelope/commons"
+)
 
 type User struct {
 	UserId     int `grom:"user_id"`
@@ -16,13 +20,13 @@ func (User) TableName() string {
 }
 
 //根据用户id，获取用户信息
-func GetUser(id int) *User {
+func GetUser(id int) User {
 	user := User{}
 	//从redis缓存汇总获取用户
 
 	//从数据库中获取用户
 	commons.GetDB().Where("user_id", id).First(&user)
-	return &user
+	return user
 }
 
 //根据用户id获取红包列表
@@ -39,4 +43,9 @@ func GetEnvelopeList(id int) []Envelope {
 func UpdateCurCount(id int, cur int) {
 	//更新单列
 	commons.GetDB().Model(&User{}).Where("user_id = ?", id).Update("cur_count", cur)
+}
+
+//编码json，存入redis
+func (u User) MarshalBinary() ([]byte, error) {
+	return json.Marshal(u)
 }

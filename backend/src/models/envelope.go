@@ -3,11 +3,11 @@ package models
 import "huhusw.com/red_envelope/commons"
 
 type Envelope struct {
-	EnvelopeId int `grom:"envelope_id" json:"envelope_id"`
-	UserId     int `grom:"user_id" json:"user_id"`
-	Value      int `grom:"value" json:"value"`
-	Opened     int `grom:"opened" json:"opened"`
-	SnatchTime int `grom:"snatch_time" json:"snatch_time"`
+	EnvelopeId commons.ID `grom:"envelope_id" json:"envelope_id"`
+	UserId     int        `grom:"user_id" json:"user_id"`
+	Value      int        `grom:"value" json:"value"`
+	Opened     int        `grom:"opened" json:"opened"`
+	SnatchTime int        `grom:"snatch_time" json:"snatch_time"`
 }
 
 //默认操作的是envelopes表

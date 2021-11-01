@@ -1,8 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
-	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,12 +26,25 @@ type RequestParamter struct {
 func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	//1.获取请求参数
 	para := getParamter(c)
+
 	//2.根据id获取用户信息
-	user := models.GetUser(para.Uid)
+	var user models.User
+	data, err := commons.GetRedis().Get(c, strconv.Itoa(para.Uid)).Result()
+	if err != nil {
+		user := models.GetUser(para.Uid)
+		//超时时间的单位为微秒，100*1000000000 是100秒
+		commons.GetRedis().Set(c, strconv.Itoa(para.Uid), user, 100*1000000000)
+	} else {
+		//5.TODO 更新缓存
+		json.Unmarshal([]byte(data), &user)
+		commons.GetRedis().Expire(c, strconv.Itoa(para.Uid), 100*1000000000)
+		fmt.Println(user)
+	}
 
 	//3.TODO 获取一个红包id
-	rand.Seed(time.Now().UnixNano())
-	envelopeId := rand.Intn(100000) + 1000
+	// rand.Seed(time.Now().UnixNano())
+	// envelopeId := rand.Intn(100000) + 1000
+	envelopeId := commons.GetID()
 
 	//4.TODO 存储此红包为该用户的一个红包，并且更新cur_count
 	var envelope models.Envelope
@@ -41,17 +55,15 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	envelope.Value = 50
 	envelope.SnatchTime = int(time.Now().Unix())
 	models.SaveEnvelope(envelope)
-	models.UpdateCurCount(para.Uid, user.CurCount+1)
-
-	//5.TODO 更新缓存
+	// models.UpdateCurCount(para.Uid, user.CurCount+1)
 
 	//6.构建返回的数据
-	data := gin.H{
+	d := gin.H{
 		"envelope_id": envelopeId,
 		"max_count":   user.MaxCount,
 		"cur_count":   user.CurCount + 1,
 	}
-	r(c, data)
+	r(c, d)
 }
 
 //打开红包业务逻辑
