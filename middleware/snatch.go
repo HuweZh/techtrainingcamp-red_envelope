@@ -33,6 +33,16 @@ func SnatchMiddle(c *gin.Context) {
 		//返回数据
 		c.Abort()
 		commons.R(c, commons.BASEERROR, commons.RUNOUTOF, nil)
+	} else {
+		//更新用户的cur_count
+		user.CurCount += 1
+
+		//将数据传入写数据库的channel
+		models.SetData(commons.UPDATEUSER, user)
+		models.SetData(commons.UPDATEUSER, user)
+
+		//更新缓存中的数据
+		commons.GetRedis().Set(c, strconv.Itoa(user.UserId), user, 100*1000000000)
 	}
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	c.Set("user", user)

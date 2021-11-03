@@ -13,16 +13,18 @@ import (
 func WalletMiddle(c *gin.Context) {
 	//请求前处理
 	fmt.Println("查看红包列表")
-	//1.获取请求参数
-	para := commons.GetParamter(c)
 
+	//获取请求参数
+	para := commons.GetParamter(c)
 	d, _ := commons.GetRedis().LRange(c, "uid"+strconv.Itoa(para.Uid), 0, -1).Result()
 	// fmt.Println("2 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
 	var envelopes []models.Envelope
 	if len(d) == 0 {
-		fmt.Println("查询数据库")
+		//访问数据库
 		envelopes = models.GetEnvelopeList(para.Uid)
-		fmt.Println(len(envelopes))
+		for _, value := range envelopes {
+			commons.GetRedis().RPush(c, "uid"+strconv.Itoa(para.Uid), value)
+		}
 	} else {
 		for _, value := range d {
 			var stem models.Envelope
@@ -30,9 +32,10 @@ func WalletMiddle(c *gin.Context) {
 			envelopes = append(envelopes, stem)
 		}
 	}
+	commons.GetRedis().Expire(c, "uid"+strconv.Itoa(para.Uid), 600*1000000000)
 	if len(envelopes) == 0 {
 		c.Abort()
-		commons.R(c, -1, "此用户没有红包", nil)
+		commons.R(c, commons.BASEERROR, commons.HAVEZERO, nil)
 	}
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	c.Set("envelopes", envelopes)

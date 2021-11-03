@@ -6,11 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RequestParamter struct {
-	Uid         int `json:"uid"`
-	Envelope_id int `json:"envelope_id"`
-}
-
 func InitMiddle(c *gin.Context) {
 	//检测作弊用户
 	//请求前处理

@@ -18,11 +18,11 @@ func OpenMiddle(c *gin.Context) {
 
 	//2.根据id获取用户信息
 	//2.根据红包id获取红包信息
-	//尝试从redis中获取
 	var envelope models.Envelope
-	// fmt.Println("1 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
+
+	//尝试从redis中获取
 	d, err := commons.GetRedis().LRange(c, "uid"+strconv.Itoa(para.Uid), 0, -1).Result()
-	// fmt.Println("2 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
+
 	if err != nil {
 		envelope = models.GetEnvelope(para.Envelope_id)
 	} else {
@@ -31,16 +31,24 @@ func OpenMiddle(c *gin.Context) {
 			if envelope.EnvelopeId == commons.ID(para.Envelope_id) {
 				break
 			}
-			// fmt.Println("3 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
 		}
 		//移除此元素
 		commons.GetRedis().LRem(c, "uid"+strconv.Itoa(para.Uid), 1, envelope)
 	}
+
 	if envelope.Opened == 1 {
 		c.Abort()
 		commons.R(c, commons.BASEERROR, commons.OPENED, nil)
 		commons.GetRedis().RPush(c, "uid"+strconv.Itoa(para.Uid), envelope)
 		commons.GetRedis().Expire(c, "uid"+strconv.Itoa(para.Uid), 600*1000000000)
+	} else {
+		//先修改状态，再传入channel，再加入redis缓存
+		envelope.Opened = 1
+		//将数据传入写数据库的channel
+		models.SetData(commons.UPDATEENVELOPESTATE, envelope)
+		//超时时间的单位为微秒，100*1000000000 是100秒
+		commons.GetRedis().RPush(c, "uid"+strconv.Itoa(envelope.UserId), envelope)
+		commons.GetRedis().Expire(c, "uid"+strconv.Itoa(envelope.UserId), 600*1000000000)
 	}
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	c.Set("envelope", envelope)

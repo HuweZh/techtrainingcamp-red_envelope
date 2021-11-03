@@ -16,14 +16,16 @@ type Paramter struct {
 func GetParamter(c *gin.Context) Paramter {
 	//接受请求参数
 	para := Paramter{}
+
+	//解析参数
 	// err := c.ShouldBindBodyWith(&user, binding.JSON)
 	err := c.ShouldBindJSON(&para)
+
 	//请求参数错误
 	if err != nil {
 		fmt.Printf("request paramter error [Err:%s]\n", err.Error())
-		// c.AbortWithStatusJSON(
-		// 	http.StatusInternalServerError,
-		// 	gin.H{"error": err.Error()})
 	}
+
+	//将携带的参数返回
 	return para
 }
