@@ -1,6 +1,6 @@
 package models
 
-//常亮，表示更新数据库的类型
+//常量，表示更新数据库的类型
 const (
 	INSERTENVELOPE      = 0
 	UPDATEENVELOPESTATE = 1

@@ -38,7 +38,7 @@ func OpenMiddle(c *gin.Context) {
 	}
 	if envelope.Opened == 1 {
 		c.Abort()
-		commons.R(c, -1, "红包已开", nil)
+		commons.R(c, commons.BASEERROR, commons.OPENED, nil)
 		commons.GetRedis().RPush(c, "uid"+strconv.Itoa(para.Uid), envelope)
 		commons.GetRedis().Expire(c, "uid"+strconv.Itoa(para.Uid), 600*1000000000)
 	}

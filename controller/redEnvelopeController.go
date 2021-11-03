@@ -22,12 +22,9 @@ type RequestParamter struct {
 
 //抢红包业务逻辑
 func (con RedEnvelopeController) Snatch(c *gin.Context) {
+	//获取请求中的数据
 	value, _ := c.Get("user")
 	user := value.(models.User)
-	//3.获取一个红包id
-	// rand.Seed(time.Now().UnixNano())
-	// envelopeId := rand.Intn(100000) + 1000
-	// envelopeId := commons.GetID()
 
 	//4.TODO 存储此红包为该用户的一个红包，并且更新cur_count
 	var envelope models.Envelope = models.GetEnve(user.UserId)
@@ -38,11 +35,11 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
 	user.CurCount += 1
 	var u models.UpdateData
-	u.Type = models.INSERTENVELOPE
+	u.Type = commons.INSERTENVELOPE
 	u.Data = envelope
 	//将数据传入写数据库的channel
 	models.SetData(u)
-	u.Type = models.UPDATEUSER
+	u.Type = commons.UPDATEUSER
 	u.Data = user
 	models.SetData(u)
 	commons.GetRedis().Set(c, strconv.Itoa(user.UserId), user, 100*1000000000)
@@ -53,7 +50,7 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 		"cur_count":   user.CurCount,
 	}
 	//返回数据
-	commons.R(c, 0, "success", data)
+	commons.R(c, commons.OK, commons.SUCCESS, data)
 }
 
 //打开红包业务逻辑
@@ -61,29 +58,23 @@ func (con RedEnvelopeController) Open(c *gin.Context) {
 	//1.获取请求参数
 	value, _ := c.Get("envelope")
 	envelope := value.(models.Envelope)
-	// fmt.Println("4 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
-	// fmt.Println(envelope)
+
 	//先修改状态，再传入channel，在加入redis缓存
 	envelope.Opened = 1
 	var u models.UpdateData
-	u.Type = models.UPDATEENVELOPESTATE
+	u.Type = commons.UPDATEENVELOPESTATE
 	u.Data = envelope
 	//将数据传入写数据库的channel
 	models.SetData(u)
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	commons.GetRedis().RPush(c, "uid"+strconv.Itoa(envelope.UserId), envelope)
 	commons.GetRedis().Expire(c, "uid"+strconv.Itoa(envelope.UserId), 600*1000000000)
-	// envelope := models.GetEnvelope(para.Envelope_id)
-
-	//4.TODO 更新红包的状态
-	// models.UpdateState(para.Envelope_id, 1)
-	//5.TODO 更新缓存
 
 	//6.构建返回的数据
 	data := gin.H{
 		"value": envelope.Value,
 	}
-	commons.R(c, 0, "success", data)
+	commons.R(c, commons.OK, commons.SUCCESS, data)
 }
 
 //获取钱包列表业务逻辑
@@ -107,28 +98,5 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 		"amount":        amount,
 		"envelope_list": value,
 	}
-	commons.R(c, 0, "success", data)
-}
-
-func getParamter(c *gin.Context) RequestParamter {
-	//接受请求参数
-	para := RequestParamter{}
-	// err := c.ShouldBindBodyWith(&user, binding.JSON)
-	err := c.ShouldBindJSON(&para)
-	//请求参数错误
-	if err != nil {
-		fmt.Printf("request paramter error [Err:%s]\n", err.Error())
-		// c.AbortWithStatusJSON(
-		// 	http.StatusInternalServerError,
-		// 	gin.H{"error": err.Error()})
-	}
-	return para
-}
-
-func r(c *gin.Context, data map[string]interface{}) {
-	c.JSON(0, map[string]interface{}{
-		"code": 0,
-		"msg":  "success",
-		"data": data,
-	})
+	commons.R(c, commons.OK, commons.SUCCESS, data)
 }

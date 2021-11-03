@@ -29,7 +29,7 @@ func SnatchMiddle(c *gin.Context) {
 	if user.MaxCount <= user.CurCount {
 		//返回数据
 		c.Abort()
-		commons.R(c, -1, "抢红包次数已用完", nil)
+		commons.R(c, commons.BASEERROR, commons.RUNOUTOF, nil)
 	}
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	c.Set("user", user)

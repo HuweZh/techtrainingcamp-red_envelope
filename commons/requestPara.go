@@ -6,11 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//url请求中附带的参数
 type Paramter struct {
 	Uid         int `json:"uid"`
 	Envelope_id int `json:"envelope_id"`
 }
 
+//从请求中获取到携带的参数
 func GetParamter(c *gin.Context) Paramter {
 	//接受请求参数
 	para := Paramter{}
