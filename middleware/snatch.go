@@ -21,10 +21,13 @@ func SnatchMiddle(c *gin.Context) {
 	data, err := commons.GetRedis().Get(c, strconv.Itoa(para.Uid)).Result()
 	if err != nil {
 		user = models.GetUser(para.Uid)
+		//添加缓存
+		commons.GetRedis().Set(c, strconv.Itoa(user.UserId), user, 100*1000000000)
 	} else {
 		//5.更新用户的状态，并更新缓存
 		json.Unmarshal([]byte(data), &user)
 	}
+
 	//此用户的红包抢完了
 	if user.MaxCount <= user.CurCount {
 		//返回数据
