@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -30,8 +31,10 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	// commons.GetRedis().LSet(c, "uid"+strconv.Itoa(para.Uid), envelope)
-	commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
-	commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
+	models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
+	models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(user.UserId), nil, 600*1000000000)
+	// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
+	// commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
 
 	//构建返回的数据
 	data := gin.H{
@@ -61,17 +64,20 @@ func (con RedEnvelopeController) Open(c *gin.Context) {
 func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 	//获取请求携带的参数
 	value, _ := c.Get("envelopes")
-
-	//计算钱包的总数
-	var amount = 0
-	for _, value := range value.([]models.Envelope) {
-		amount += value.Value
-	}
+	amount := c.GetInt("amount")
+	envelopes := value.([]models.Envelope)
+	//对红包按照时间戳排序
+	// comp := func(i, j models.Envelope) bool {
+	// 	return i.SnatchTime < j.SnatchTime
+	// }
+	sort.Slice(envelopes, func(i, j int) bool {
+		return envelopes[i].SnatchTime < envelopes[j].SnatchTime
+	})
 
 	//构建返回数据，并返回
 	data := gin.H{
 		"amount":        amount,
-		"envelope_list": value,
+		"envelope_list": envelopes,
 	}
 	commons.R(c, commons.OK, commons.SUCCESS, data)
 }

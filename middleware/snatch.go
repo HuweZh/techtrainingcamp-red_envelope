@@ -18,14 +18,12 @@ func SnatchMiddle(c *gin.Context) {
 
 	//2.根据id获取用户信息
 	var user models.User
-	data, err := commons.GetRedis().Get(c, strconv.Itoa(para.Uid)).Result()
+	userData, err := commons.GetRedis().Get(c, strconv.Itoa(para.Uid)).Result()
 	if err != nil {
 		user = models.GetUser(para.Uid)
-		//添加缓存
-		commons.GetRedis().Set(c, strconv.Itoa(user.UserId), user, 100*1000000000)
 	} else {
-		//5.更新用户的状态，并更新缓存
-		json.Unmarshal([]byte(data), &user)
+		//更新用户的状态
+		json.Unmarshal([]byte(userData), &user)
 	}
 
 	//此用户的红包抢完了
@@ -36,13 +34,6 @@ func SnatchMiddle(c *gin.Context) {
 	} else {
 		//更新用户的cur_count
 		user.CurCount += 1
-
-		//将数据传入写数据库的channel
-		models.SetData(commons.UPDATEUSER, user)
-		models.SetData(commons.UPDATEUSER, user)
-
-		//更新缓存中的数据
-		commons.GetRedis().Set(c, strconv.Itoa(user.UserId), user, 100*1000000000)
 	}
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	c.Set("user", user)
@@ -54,4 +45,9 @@ func SnatchMiddle(c *gin.Context) {
 	// c.Abort()
 	//请求后处理
 	fmt.Println("抢红包之后的判断....")
+
+	//将数据传入写数据库的channel
+	models.SetMysqlData(commons.UPDATEUSER, user)
+	//更新缓存中的数据
+	models.SetRedisData(commons.SET, strconv.Itoa(user.UserId), user, 600*1000000000)
 }

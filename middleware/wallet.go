@@ -16,30 +16,41 @@ func WalletMiddle(c *gin.Context) {
 
 	//获取请求参数
 	para := commons.GetParamter(c)
-	d, _ := commons.GetRedis().LRange(c, "uid"+strconv.Itoa(para.Uid), 0, -1).Result()
-	// fmt.Println("2 ", commons.GetRedis().LLen(c, "uid"+strconv.Itoa(para.Uid)))
+	//获取用户信息
+	userData, err := commons.GetRedis().Get(c, strconv.Itoa(para.Uid)).Result()
+
 	var envelopes []models.Envelope
-	if len(d) == 0 {
-		//访问数据库
+	var user models.User
+	//redis中没有存此用户，查询数据库
+	if err != nil {
+		user = models.GetUser(para.Uid)
 		envelopes = models.GetEnvelopeList(para.Uid)
-		for _, value := range envelopes {
-			commons.GetRedis().RPush(c, "uid"+strconv.Itoa(para.Uid), value)
+		//存入redis
+		for _, envelope := range envelopes {
+			models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
+			// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
 		}
 	} else {
+		//解析user数据
+		json.Unmarshal([]byte(userData), &user)
+		//获取红包数据
+		d, _ := commons.GetRedis().LRange(c, "uid"+strconv.Itoa(para.Uid), 0, -1).Result()
 		for _, value := range d {
 			var stem models.Envelope
 			json.Unmarshal([]byte(value), &stem)
 			envelopes = append(envelopes, stem)
 		}
 	}
-	commons.GetRedis().Expire(c, "uid"+strconv.Itoa(para.Uid), 600*1000000000)
+
 	if len(envelopes) == 0 {
 		c.Abort()
 		commons.R(c, commons.BASEERROR, commons.HAVEZERO, nil)
 	}
-	//超时时间的单位为微秒，100*1000000000 是100秒
-	c.Set("envelopes", envelopes)
+
 	//中间件通信，设置值
+	c.Set("envelopes", envelopes)
+	c.Set("amount", user.Amount)
+
 	c.Set("name", "我是中间件中的数据")
 	//执行请求
 	c.Next()
@@ -47,4 +58,6 @@ func WalletMiddle(c *gin.Context) {
 	// c.Abort()
 	//请求后处理
 	fmt.Println("查看红包列表后")
+	models.SetRedisData(commons.SET, strconv.Itoa(user.UserId), user, 600*1000000000)
+	models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(para.Uid), nil, 600*1000000000)
 }

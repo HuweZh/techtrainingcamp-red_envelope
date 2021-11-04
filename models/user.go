@@ -11,6 +11,7 @@ type User struct {
 	MaxCount   int `grom:"max_count"`
 	CurCount   int `grom:"cur_count"`
 	CreateTime int `grom:"create_time"`
+	Amount     int `grom:"amount"`
 }
 
 //默认操作的是users表
@@ -30,12 +31,12 @@ func GetUser(id int) User {
 }
 
 //根据用户id获取红包列表
-func GetEnvelopeList(id int) []Envelope {
+func GetEnvelopeList(uid int) []Envelope {
 	envelopes := []Envelope{}
 	//从redis缓存汇总获取用户
 
 	//从数据库中获取用户
-	commons.GetDB().Where("user_id", id).Find(&envelopes)
+	commons.GetDB().Where("user_id", uid).Find(&envelopes)
 	return envelopes
 }
 
@@ -43,6 +44,12 @@ func GetEnvelopeList(id int) []Envelope {
 func UpdateCurCount(id int, cur int) {
 	//更新单列
 	commons.GetDB().Model(&User{}).Where("user_id = ?", id).Update("cur_count", cur)
+}
+
+//更新当前的抢红包次数
+func UpdateAmount(id int, amount int) {
+	//更新单列
+	commons.GetDB().Model(&User{}).Where("user_id = ?", id).Update("amount", amount)
 }
 
 //编码json，存入redis
