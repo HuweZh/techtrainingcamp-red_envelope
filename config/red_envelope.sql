@@ -11,7 +11,7 @@
  Target Server Version : 80025
  File Encoding         : 65001
 
- Date: 31/10/2021 17:07:39
+ Date: 04/11/2021 15:35:55
 */
 
 SET NAMES utf8mb4;
@@ -39,6 +39,7 @@ CREATE TABLE `user`  (
   `max_count` int NULL DEFAULT NULL COMMENT '最多抢max_count次',
   `cur_count` int NULL DEFAULT NULL COMMENT '当前第几次抢',
   `create_time` int NULL DEFAULT NULL COMMENT '创建时间，unix时间戳',
+  `amount` int NULL DEFAULT 0 COMMENT '用户当前钱包的金额，不算未拆红包',
   PRIMARY KEY (`user_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_cs_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
