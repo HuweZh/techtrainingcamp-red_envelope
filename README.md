@@ -2,9 +2,9 @@
 
 ### 功能实现
 
-* [ ] 流水线部署（火山引擎，推送k8s集群）
+* [ ] 流水线部署（火山引擎, 推送k8s集群）
 * [ ] 反爬机制 
-* [ ] 压力测试（webbench）
+* [ ] 压力测试（ab, webbench）
 * [ ] 缓存（redis） 
 * [x] 雪花算法生成分布式id
 * [x] 随机红包金额生成
@@ -32,7 +32,8 @@
     - 进入：sudo docker container exec -it mysql bash
     - 备份：sudo docker exec mysql /usr/bin/mysqldump -u root --password=root red_envelope > 1.sql
 - 安装运行redis容器
-    - 
+    - 拉取：sudo docker pull redis
+    - 启动：sudo docker container run -d --net=host -v /home/redis:/home/redis --name redis redis
 - 从docker构建运行
     - cd backend && sudo docker build -f Dockerfile2 -t my_app .
     - sudo docker run --net=host --name my_app --rm my_app
@@ -47,10 +48,12 @@
     - 初始化mod：go mod init
     - 增加缺失的包，移除没用的包：go mod tidy
     - 编译运行：go build main.go && ./main
+- 压力测试工具安装
+    - ab:sudo apt update && sudo apt install -y apache2-utils   
+
 #### 部署
 
-- 流水线编译构建： go env -w GO111MODULE=auto && go env -w GOPROXY=https://goproxy.cn,direct && go build -i -o server
-
+- 流水线编译构建： go env -w GO111MODULE=auto && go env -w GOPROXY=https://goproxy.cn,direct && go build main.go
 - kubectl安装连接节点：
     - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl
     - chmod +x ./kubectl
@@ -60,3 +63,4 @@
     - 查看节点：kubectl get node
     - 查看pod：kubectl get pods
     - 进入pods：kubectl exec -it NAME  [-c  containerName] [-n namespace] -- bash [command]
+    - 退出：exit
