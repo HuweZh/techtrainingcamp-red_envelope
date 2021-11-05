@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -31,6 +32,7 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 
 	//超时时间的单位为微秒，100*1000000000 是100秒
 	// commons.GetRedis().LSet(c, "uid"+strconv.Itoa(para.Uid), envelope)
+	models.SetMysqlData(commons.INSERTENVELOPE, envelope)
 	models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
 	models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(user.UserId), nil, 600*1000000000)
 	// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
@@ -80,4 +82,49 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 		"envelope_list": envelopes,
 	}
 	commons.R(c, commons.OK, commons.SUCCESS, data)
+}
+
+// 测试红包的金额
+func (con RedEnvelopeController) Test(c *gin.Context) {
+	fmt.Println("test")
+	var sum int64 = 0
+	var yuan int = 0
+	var eryuan int = 0
+	var sanyuan int = 0
+	var siyuan int = 0
+	var wuyuan int = 0
+	var liuyuan int = 0
+	var qiyuan int = 0
+	var bayuan int = 0
+	var jiuyuan int = 0
+	var shiyuan int = 0
+	for i := 0; i < 1000000; i++ {
+		money := models.TTT()
+		fmt.Println("money = ", money)
+		if money <= 100 {
+			yuan++
+		} else if money <= 200 {
+			eryuan++
+		} else if money <= 300 {
+			sanyuan++
+		} else if money <= 400 {
+			siyuan++
+		} else if money <= 500 {
+			wuyuan++
+		} else if money <= 600 {
+			liuyuan++
+		} else if money <= 700 {
+			qiyuan++
+		} else if money <= 800 {
+			bayuan++
+		} else if money <= 900 {
+			jiuyuan++
+		} else if money <= 1000 {
+			shiyuan++
+		}
+
+		sum += money
+	}
+	fmt.Println("mean = ", sum/1000000)
+	fmt.Println("mean = ", sum)
 }

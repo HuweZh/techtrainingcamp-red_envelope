@@ -24,8 +24,9 @@ const (
 
 //返回数据的信息
 const (
-	SUCCESS  = "success"
-	RUNOUTOF = "抢红包次数用完"
-	OPENED   = "红包已经打开，请勿重复打开"
-	HAVEZERO = "此用户没用红包"
+	SUCCESS     = "success"
+	RUNOUTOF    = "抢红包次数用完"
+	OPENED      = "红包已经打开，请勿重复打开"
+	HAVEZERO    = "此用户没用红包"
+	SNATCHERROR = "未抢到红包"
 )
