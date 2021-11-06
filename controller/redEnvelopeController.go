@@ -87,7 +87,7 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 // 测试红包的金额
 func (con RedEnvelopeController) Test(c *gin.Context) {
 	fmt.Println("test")
-	var sum int64 = 0
+	var sum int = 0
 	var yuan int = 0
 	var eryuan int = 0
 	var sanyuan int = 0
@@ -99,7 +99,7 @@ func (con RedEnvelopeController) Test(c *gin.Context) {
 	var jiuyuan int = 0
 	var shiyuan int = 0
 	for i := 0; i < 1000000; i++ {
-		money := models.TTT()
+		money := models.GetAmount()
 		fmt.Println("money = ", money)
 		if money <= 100 {
 			yuan++
