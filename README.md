@@ -2,12 +2,21 @@
 
 ### 功能实现
 
-* [ ] 流水线部署（火山引擎, 推送k8s集群）
-* [ ] 反爬机制 
-* [ ] 压力测试（ab, webbench）
-* [ ] 缓存（redis） 
+* [x] 流水线部署（火山引擎, 推送k8s集群）
+* [x] 反爬机制（反爬中间件）
+* [x] 压力测试（ab, webbench，python多线程并发测试）
+* [x] 缓存（redis） 
 * [x] 雪花算法生成分布式id
 * [x] 随机红包金额生成
+* [x] 缓存红包队列，动态红包添加
+* [x] 全局异常捕获中间件
+* [ ] 性能优化（sql explain、profiler、火焰图）
+* [x] 消息队列数据库存储削峰（RocketMQ）
+* [x] 滚动日志记录（logrus+lumberjack）
+* [ ] 熔断机制（hystrix）
+* [ ] 优雅重启
+* [x] 流量控制（Sentinel匀速排队）
+* [x] 解决跨域问题（跨域中间件）
 
 ### 环境配置
 
@@ -15,6 +24,8 @@
 
 放到$GOPATH/src/red_envelope下
 
+- 升级npm
+    - npm -g install npm@6.14.10
 - 安装vue
     - sudo npm install -g vue
     - sudo npm install -g @vue/cli
@@ -34,6 +45,15 @@
 - 安装运行redis容器
     - 拉取：sudo docker pull redis
     - 启动：sudo docker container run -d --net=host -v /home/redis:/home/redis --name redis redis
+    - 进入：sudo docker container exec -it redis bash
+- 安装运行rocketmq容器
+    - 拉取nameserver：sudo docker pull foxiswho/rocketmq:server-4.5.1
+    - 拉取broker：sudo docker pull foxiswho/rocketmq:broker-4.5.1
+    - 启动nameserver：sudo docker container run -d -p 9876:9876 --name rmq_server foxiswho/rocketmq:server-4.5.1
+    - 启动broker：sudo docker container run -d -p 10911:10911 -p 10909:10909 --name rmq_broker --link rmq_server:namesrv -e "NAMESRV_ADDR=namesrv:9876" -e "JAVA_OPTS=-Duser.home=/opt" -e "JAVA_OPT_EXT=-server -Xms128m -Xmx128m" foxiswho/rocketmq:broker-4.5.1
+    - 拉取可视化控制台：sudo docker pull styletang/rocketmq-console-ng
+    - 启动控制台：sudo docker container run -d --name rmq_console -p 8180:8080 --link rmq_server:namesrv -e "JAVA_OPTS=-Drocketmq.namesrv.addr=namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false" -t styletang/rocketmq-console-ng
+    - 浏览器访问：http://localhost:8180
 - 从docker构建运行
     - cd backend && sudo docker build -f Dockerfile2 -t my_app .
     - sudo docker run --net=host --name my_app --rm my_app
@@ -49,7 +69,9 @@
     - 增加缺失的包，移除没用的包：go mod tidy
     - 编译运行：go build main.go && ./main
 - 压力测试工具安装
-    - ab:sudo apt update && sudo apt install -y apache2-utils   
+    - ab:sudo apt update && sudo apt install -y apache2-utils
+    - webbench:cd ./test && ./webbench.out
+    - python多线程并发测试: cd ./text && python test.py
 
 #### 部署
 
