@@ -1,0 +1,14 @@
+version: "v1"
+sentinel:
+  app:
+    name: my-red-envelope-app
+    type: 0
+  log:
+    dir: "../logs"
+    pid: false
+    metric:
+      maxFileCount: 5
+      flushIntervalSec: 10
+  stat:
+    system:
+      collectIntervalMs: 1000
