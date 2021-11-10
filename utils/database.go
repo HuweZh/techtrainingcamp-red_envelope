@@ -1,16 +1,16 @@
 package utils
 
 import (
-	_1 "context"
-	_2 "encoding/json"
-	_3 "fmt"
-	_4 "github.com/bwmarrin/snowflake"
-	_5 "github.com/go-redis/redis/v8"
-	_6 "gorm.io/driver/mysql"
-	_7 "gorm.io/gorm"
-	_8 "red_envelope/configure"
-	_9 "red_envelope/models"
-	_10 "strconv"
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/bwmarrin/snowflake"
+	"github.com/go-redis/redis/v8"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"red_envelope/configure"
+	"red_envelope/models"
+	"strconv"
 )
 
 //全局变量
