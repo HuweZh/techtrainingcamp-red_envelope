@@ -12,7 +12,7 @@ func getEnv(env string, defaultVal string) (key string) {
 	if key = os.Getenv(env); key == "" {
 		key = defaultVal
 	}
-	return
+	return key
 }
 var (
 	ctx = context.Background()
