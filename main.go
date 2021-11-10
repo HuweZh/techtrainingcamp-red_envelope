@@ -1,18 +1,18 @@
 package main
 
 import (
-	_1 "fmt"
-	_2 "github.com/gin-gonic/gin"
-	_3 "math/rand"
-	_4 "net/http"
-	_5 "red_envelope/configure"
-	_6 "red_envelope/middlewares"
-	_7 "red_envelope/routers"
-	_8 "red_envelope/utils"
-	_9 "time"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"math/rand"
+	"net/http"
+	"red_envelope/configure"
+	"red_envelope/middlewares"
+	"red_envelope/routers"
+	"red_envelope/utils"
+	"time"
 
 	sentinel "github.com/alibaba/sentinel-golang/api" //前面加一个，这样即便没使用也不会报没使用的错了
-	_10 "github.com/alibaba/sentinel-golang/core/flow"
+	"github.com/alibaba/sentinel-golang/core/flow"
 	_ "net/http/pprof"
 )
 
@@ -37,7 +37,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	/*
+	return
+	
 	//初始化日志记录
 	utils.InitLogger()
 
@@ -80,5 +81,5 @@ func main() {
 		utils.MyLog.Error(err)
 		return
 	}
-	*/
+	
 }
