@@ -2,7 +2,7 @@ package main
 
 import (
 "context"
-"database/sql"
+// "database/sql"
 "fmt"
 "os"
 "github.com/gofiber/fiber/v2"
