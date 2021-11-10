@@ -23,6 +23,7 @@ func main() {
 	port := getEnv("MYSQL_SERVICE_PORT", "3306")
 	password := getEnv("MYSQL_ROOT_PASSWORD", "root")
 	dsn := fmt.Sprintf("root:%s@tcp(%s:%s)/red_envelope", password, host, port)
+	fmt.Println(dsn)
 // 	db, err := sql.Open("mysql", dsn)
 // 	if err != nil {
 // 		panic(err)
