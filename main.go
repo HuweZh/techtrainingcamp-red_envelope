@@ -37,7 +37,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
+	/*
 	//初始化日志记录
 	utils.InitLogger()
 
@@ -80,4 +80,5 @@ func main() {
 		utils.MyLog.Error(err)
 		return
 	}
+	*/
 }
