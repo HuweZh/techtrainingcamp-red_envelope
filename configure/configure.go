@@ -21,5 +21,5 @@ const (
 	GIN_MODE         = "debug" //debug or release
 	RmqNameseverAddr = "172.16.69.218:9876"
 	RmqBrokerAddr    = "172.16.244.9:10911"
-	UseProfiler      = true
+	UseProfiler      = false
 )
