@@ -37,7 +37,7 @@ func Init() (err error) {
 	if err != nil {
 		return err
 	}
-	return
+	
 	//初始化redis连接
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     configure.RedisAddr,
