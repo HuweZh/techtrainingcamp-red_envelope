@@ -42,7 +42,7 @@ func main() {
 	utils.InitLogger()
 
 	//初始化RMQ
-	utils.InitRMQ()
+// 	utils.InitRMQ()
 
 	//初始化sentinel配置和设置埋点(定义资源)
 	//https://sentinelguard.io/zh-cn/docs/golang/flow-control.html
