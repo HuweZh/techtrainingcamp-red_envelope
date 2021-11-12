@@ -24,20 +24,19 @@ func SnatchMiddle(c *gin.Context) {
 	}
 
 	if user.MaxCount <= user.CurCount {
-		//此用户的红包抢完了
 		//返回数据
+		//此用户的红包抢完了
 		c.Abort()
-		commons.R(c, commons.BASEERROR, commons.RUNOUTOF, nil)
+		commons.R(c, commons.NOCHANCE, commons.RUNOUTOF, nil)
 	} else {
 		//更新用户的cur_count
 		user.CurCount += 1
+		//中间件通信，设置值
+		c.Set("user", user)
+
+		//执行请求
+		c.Next()
 	}
-	//中间件通信，设置值
-	c.Set("user", user)
-
-	//执行请求
-	c.Next()
-
 	//请求后处理
 	//将数据传入写数据库的channel
 	models.SetMysqlData(commons.UPDATEUSER, user)

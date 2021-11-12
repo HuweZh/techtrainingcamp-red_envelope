@@ -31,7 +31,7 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 
 	if envelope.Value == 0 {
 		//没抢到红包
-		commons.R(c, commons.BASEERROR, commons.SNATCHERROR, nil)
+		commons.R(c, commons.NOTGETONE, commons.SNATCHERROR, nil)
 	} else {
 		//存入数据库
 		models.SetMysqlData(commons.INSERTENVELOPE, envelope)

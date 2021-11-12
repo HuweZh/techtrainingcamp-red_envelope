@@ -22,7 +22,7 @@ func OpenMiddle(c *gin.Context) {
 	//redis中没有存此用户，查询数据库
 	if err != nil {
 		user = models.GetUser(para.Uid)
-		envelope = models.GetEnvelope(para.Uid)
+		envelope = models.GetEnvelope(para.Envelope_id)
 		//将用户存入数据库
 		// models.SetRedisData(commons.SET, strconv.Itoa(user.UserId), user, 100*1000000000)
 	} else {
@@ -42,7 +42,8 @@ func OpenMiddle(c *gin.Context) {
 
 	if envelope.Opened == 1 {
 		c.Abort()
-		commons.R(c, commons.BASEERROR, commons.OPENED, nil)
+		//红包已经打开过
+		commons.R(c, commons.REPEATOPEN, commons.OPENED, nil)
 	} else {
 		//先修改状态，再传入channel，再加入redis缓存
 		envelope.Opened = 1

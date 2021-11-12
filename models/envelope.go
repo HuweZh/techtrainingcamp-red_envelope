@@ -46,12 +46,12 @@ func GetEnve(uid int) Envelope {
 	return Envelope{commons.GetID(), uid, amount, 0, int(time.Now().Unix())}
 }
 
-func GetEnvelope(id int) Envelope {
+func GetEnvelope(enve_id int) Envelope {
 	envelope := Envelope{}
 	//从redis缓存汇总获取红包
 
 	//从数据库中获取红包
-	commons.GetDB().Where("envelope_id", id).First(&envelope)
+	commons.GetDB().Where("envelope_id", enve_id).First(&envelope)
 	return envelope
 }
 
