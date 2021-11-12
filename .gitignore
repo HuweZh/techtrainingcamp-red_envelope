@@ -40,3 +40,4 @@ pnpm-debug.log*
 
 go.mod
 go.sum
+/log
