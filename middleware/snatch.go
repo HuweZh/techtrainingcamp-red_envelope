@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +10,6 @@ import (
 )
 
 func SnatchMiddle(c *gin.Context) {
-	//请求前处理
-	fmt.Println("抢红包之前的判断")
 	//1.获取请求参数
 	para := commons.GetParamter(c)
 
@@ -40,11 +37,8 @@ func SnatchMiddle(c *gin.Context) {
 
 	//执行请求
 	c.Next()
-	//中断请求
-	// c.Abort()
-	//请求后处理
-	fmt.Println("抢红包之后的判断....")
 
+	//请求后处理
 	//将数据传入写数据库的channel
 	models.SetMysqlData(commons.UPDATEUSER, user)
 	//更新缓存中的数据

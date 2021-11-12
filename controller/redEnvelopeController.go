@@ -37,8 +37,6 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 		models.SetMysqlData(commons.INSERTENVELOPE, envelope)
 		models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
 		models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(user.UserId), nil, 600*1000000000)
-		// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
-		// commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
 
 		//构建返回的数据
 		data := gin.H{

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,9 +10,6 @@ import (
 )
 
 func WalletMiddle(c *gin.Context) {
-	//请求前处理
-	fmt.Println("查看红包列表")
-
 	//获取请求参数
 	para := commons.GetParamter(c)
 	//获取用户信息
@@ -52,10 +48,8 @@ func WalletMiddle(c *gin.Context) {
 	c.Set("amount", user.Amount)
 	//执行请求
 	c.Next()
-	//中断请求
-	// c.Abort()
+
 	//请求后处理
-	fmt.Println("查看红包列表后")
 	models.SetRedisData(commons.SET, strconv.Itoa(user.UserId), user, 600*1000000000)
 	models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(para.Uid), nil, 600*1000000000)
 }

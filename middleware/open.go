@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +10,6 @@ import (
 )
 
 func OpenMiddle(c *gin.Context) {
-	//请求前处理
-	fmt.Println("开红包之前的判断")
 	//1.获取请求参数
 	para := commons.GetParamter(c)
 
@@ -56,10 +53,8 @@ func OpenMiddle(c *gin.Context) {
 
 	//执行请求
 	c.Next()
-	//中断请求
-	// c.Abort()
+
 	//请求后处理
-	fmt.Println("开红包之后的判断....")
 	//更新redis
 	models.SetRedisData(commons.SET, strconv.Itoa(user.UserId), user, 600*1000000000)
 	models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(para.Uid), envelope, 0)
