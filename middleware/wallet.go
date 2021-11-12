@@ -50,8 +50,6 @@ func WalletMiddle(c *gin.Context) {
 	//中间件通信，设置值
 	c.Set("envelopes", envelopes)
 	c.Set("amount", user.Amount)
-
-	c.Set("name", "我是中间件中的数据")
 	//执行请求
 	c.Next()
 	//中断请求

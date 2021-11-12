@@ -51,9 +51,9 @@ func OpenMiddle(c *gin.Context) {
 		envelope.Opened = 1
 		user.Amount += envelope.Value
 	}
-	c.Set("envelope", envelope)
 	//中间件通信，设置值
-	c.Set("name", "我是中间件中的数据")
+	c.Set("envelope", envelope)
+
 	//执行请求
 	c.Next()
 	//中断请求

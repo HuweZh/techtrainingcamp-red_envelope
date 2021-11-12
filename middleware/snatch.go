@@ -35,10 +35,9 @@ func SnatchMiddle(c *gin.Context) {
 		//更新用户的cur_count
 		user.CurCount += 1
 	}
-	//超时时间的单位为微秒，100*1000000000 是100秒
-	c.Set("user", user)
 	//中间件通信，设置值
-	c.Set("name", "我是中间件中的数据")
+	c.Set("user", user)
+
 	//执行请求
 	c.Next()
 	//中断请求

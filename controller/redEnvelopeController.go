@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 
@@ -72,10 +71,8 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 	value, _ := c.Get("envelopes")
 	amount := c.GetInt("amount")
 	envelopes := value.([]models.Envelope)
+
 	//对红包按照时间戳排序
-	// comp := func(i, j models.Envelope) bool {
-	// 	return i.SnatchTime < j.SnatchTime
-	// }
 	sort.Slice(envelopes, func(i, j int) bool {
 		return envelopes[i].SnatchTime < envelopes[j].SnatchTime
 	})
@@ -86,16 +83,4 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 		"envelope_list": envelopes,
 	}
 	commons.R(c, commons.OK, commons.SUCCESS, data)
-}
-
-// 测试红包的金额
-func (con RedEnvelopeController) Test(c *gin.Context) {
-	fmt.Println("test")
-	var sum int = 0
-	for i := 0; i < 1000000; i++ {
-		money := models.GetAmount()
-		sum += money
-	}
-	fmt.Println("mean = ", sum/1000000)
-	fmt.Println("mean = ", sum)
 }
