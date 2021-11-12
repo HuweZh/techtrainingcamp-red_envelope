@@ -259,18 +259,18 @@ func (con ApiController) GetWalletListHandler(c *gin.Context) {
 	})
 
 	//钱包信息发往消息队列处理
-	wallet := models.Wallet{
-		Uid:   request.Uid,
-		Money: dataAmount,
-	}
-	walletJson, err := json.Marshal(wallet)
-	if err == nil {
-		rmqMsg := utils.RocketMqMessage{
-			Topic:        "wallet",
-			MessageBytes: walletJson,
-		}
-		utils.SendToRMQ(rmqMsg)
-	}
+// 	wallet := models.Wallet{
+// 		Uid:   request.Uid,
+// 		Money: dataAmount,
+// 	}
+// 	walletJson, err := json.Marshal(wallet)
+// 	if err == nil {
+// 		rmqMsg := utils.RocketMqMessage{
+// 			Topic:        "wallet",
+// 			MessageBytes: walletJson,
+// 		}
+// 		utils.SendToRMQ(rmqMsg)
+// 	}
 }
 
 func getUserEnvelopeList(uid int64, c *gin.Context) []models.Envelope {
