@@ -30,23 +30,27 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 	// 存储此红包为该用户的一个红包
 	var envelope models.Envelope = models.GetEnve(user.UserId)
 
-	//超时时间的单位为微秒，100*1000000000 是100秒
-	// commons.GetRedis().LSet(c, "uid"+strconv.Itoa(para.Uid), envelope)
-	models.SetMysqlData(commons.INSERTENVELOPE, envelope)
-	models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
-	models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(user.UserId), nil, 600*1000000000)
-	// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
-	// commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
+	if envelope.Value == 0 {
+		//没抢到红包
+		commons.R(c, commons.BASEERROR, commons.SNATCHERROR, nil)
+	} else {
+		//存入数据库
+		models.SetMysqlData(commons.INSERTENVELOPE, envelope)
+		models.SetRedisData(commons.RPUSH, "uid"+strconv.Itoa(user.UserId), envelope, 0)
+		models.SetRedisData(commons.EXPIRE, "uid"+strconv.Itoa(user.UserId), nil, 600*1000000000)
+		// commons.GetRedis().RPush(c, "uid"+strconv.Itoa(user.UserId), envelope)
+		// commons.GetRedis().Expire(c, "uid"+strconv.Itoa(user.UserId), 600*1000000000)
 
-	//构建返回的数据
-	data := gin.H{
-		"envelope_id": envelope.EnvelopeId,
-		"max_count":   user.MaxCount,
-		"cur_count":   user.CurCount,
+		//构建返回的数据
+		data := gin.H{
+			"envelope_id": envelope.EnvelopeId,
+			"max_count":   user.MaxCount,
+			"cur_count":   user.CurCount,
+		}
+
+		//返回数据
+		commons.R(c, commons.OK, commons.SUCCESS, data)
 	}
-
-	//返回数据
-	commons.R(c, commons.OK, commons.SUCCESS, data)
 }
 
 //打开红包业务逻辑
@@ -88,41 +92,8 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 func (con RedEnvelopeController) Test(c *gin.Context) {
 	fmt.Println("test")
 	var sum int = 0
-	var yuan int = 0
-	var eryuan int = 0
-	var sanyuan int = 0
-	var siyuan int = 0
-	var wuyuan int = 0
-	var liuyuan int = 0
-	var qiyuan int = 0
-	var bayuan int = 0
-	var jiuyuan int = 0
-	var shiyuan int = 0
 	for i := 0; i < 1000000; i++ {
 		money := models.GetAmount()
-		fmt.Println("money = ", money)
-		if money <= 100 {
-			yuan++
-		} else if money <= 200 {
-			eryuan++
-		} else if money <= 300 {
-			sanyuan++
-		} else if money <= 400 {
-			siyuan++
-		} else if money <= 500 {
-			wuyuan++
-		} else if money <= 600 {
-			liuyuan++
-		} else if money <= 700 {
-			qiyuan++
-		} else if money <= 800 {
-			bayuan++
-		} else if money <= 900 {
-			jiuyuan++
-		} else if money <= 1000 {
-			shiyuan++
-		}
-
 		sum += money
 	}
 	fmt.Println("mean = ", sum/1000000)

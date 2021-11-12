@@ -43,7 +43,7 @@ func (Envelope) TableName() string {
 func GetEnve(uid int) Envelope {
 	//红包id  用户id  金额  是否打开  抢到的时间戳
 	amount := int(GetAmount())
-	return Envelope{commons.GetID(), uid, amount, 0, int(time.Now().UnixNano())}
+	return Envelope{commons.GetID(), uid, amount, 0, int(time.Now().Unix())}
 }
 
 func GetEnvelope(id int) Envelope {

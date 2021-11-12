@@ -3,9 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"huhusw.com/red_envelope/commons"
@@ -28,17 +26,11 @@ func SnatchMiddle(c *gin.Context) {
 		json.Unmarshal([]byte(userData), &user)
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	p := float32(rand.Intn(1000)) / 1000.0
 	if user.MaxCount <= user.CurCount {
 		//此用户的红包抢完了
 		//返回数据
 		c.Abort()
 		commons.R(c, commons.BASEERROR, commons.RUNOUTOF, nil)
-	} else if p < (1 - models.GetProbability()) {
-		//没抢到红包
-		c.Abort()
-		commons.R(c, commons.BASEERROR, commons.SNATCHERROR, nil)
 	} else {
 		//更新用户的cur_count
 		user.CurCount += 1
