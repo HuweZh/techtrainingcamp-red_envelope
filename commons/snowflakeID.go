@@ -2,9 +2,11 @@ package commons
 
 import (
 	"errors" // 生成错误
-	"fmt"
-	"sync" // 使用互斥锁
-	"time" // 获取时间
+	"sync"   // 使用互斥锁
+	"time"   // 获取时间
+
+	"github.com/sirupsen/logrus"
+	"huhusw.com/red_envelope/logger"
 )
 
 /*
@@ -48,7 +50,10 @@ func init() {
 	// 生成节点实例
 	curNode, err = newNode(1)
 	if err != nil {
-		fmt.Printf("create node [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"雪花id生成器初始化错误": err.Error(),
+		})
+		// fmt.Printf("create node [Err:%s]\n", err.Error())
 		return
 	}
 	//开启一个协程循环生成snowflakeID

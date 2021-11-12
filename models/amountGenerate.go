@@ -5,13 +5,14 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"huhusw.com/red_envelope/commons"
+	"huhusw.com/red_envelope/logger"
 )
 
 type MoneySetting struct {
@@ -43,7 +44,10 @@ func init() {
 	//加载数据库文件
 	filePtr, err := os.Open("./config/config.json") //config的文件目录
 	if err != nil {
-		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"全局金额配置出错": err.Error(),
+		})
+		// fmt.Printf("Open file failed [Err:%s]\n", err.Error())
 		return
 	}
 	//关闭文件
@@ -55,7 +59,10 @@ func init() {
 	//读取配置文件中的信息，初始化全局的金额配置
 	err = decoder.Decode(moneySetting)
 	if err != nil {
-		fmt.Printf("json decode error [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"全局金额配置文件解码出错": err.Error(),
+		})
+		// fmt.Printf("json decode error [Err:%s]\n", err.Error())
 	}
 	//初始化全局配置
 	commons.GetRedis().Set(context.Background(), "sum_envelope", moneySetting.SumEnvelope, 0)

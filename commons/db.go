@@ -7,8 +7,10 @@ import (
 	"time"
 
 	_redis "github.com/go-redis/redis/v8"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"huhusw.com/red_envelope/logger"
 )
 
 /**
@@ -41,7 +43,11 @@ func init() {
 	//加载数据库文件
 	filePtr, err := os.Open("./config/db.json") //config的文件目录
 	if err != nil {
-		fmt.Printf("Open file failed [Err:%s]\n", err.Error())
+		// 写入日志信息
+		logger.Log.WithFields(logrus.Fields{
+			"数据库配置文件读取出错": err.Error(),
+		})
+		// fmt.Printf("Open file failed [Err:%s]\n", err.Error())
 		return
 	}
 	//关闭文件
@@ -53,7 +59,10 @@ func init() {
 	//读取配置文件中的信息
 	err = decoder.Decode(setting)
 	if err != nil {
-		fmt.Printf("json decode error [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"数据库配置文件解码出错": err.Error(),
+		})
+		// fmt.Printf("json decode error [Err:%s]\n", err.Error())
 	}
 
 	//创建redis连接
@@ -95,7 +104,10 @@ func newConnection() *gorm.DB {
 	// 获取数据库连接
 	conn, err := gorm.Open(mysql.Open(dbUri), &gorm.Config{})
 	if err != nil {
-		fmt.Printf("mysql connection error [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"mysql连接出错": err.Error(),
+		})
+		// fmt.Printf("mysql connection error [Err:%s]\n", err.Error())
 	}
 
 	//设置数据库连接池信息
@@ -107,7 +119,10 @@ func newConnection() *gorm.DB {
 func setup(conn *gorm.DB) {
 	sqlDB, err := conn.DB()
 	if err != nil {
-		fmt.Printf("mysqlDB poll error [Err:%s]\n", err.Error())
+		logger.Log.WithFields(logrus.Fields{
+			"数据库池初始化出错": err.Error(),
+		})
+		// fmt.Printf("mysqlDB poll error [Err:%s]\n", err.Error())
 	}
 	sqlDB.SetMaxIdleConns(10)                   //最大空闲连接数
 	sqlDB.SetMaxOpenConns(30)                   //最大连接数
