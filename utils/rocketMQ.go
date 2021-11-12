@@ -61,7 +61,7 @@ func InitRMQ() {
 
 	//初始化消费者
 	MyConsumer, _ := rocketmq.NewPushConsumer(
-		consumer.WithGroupName("myGroup"),
+		consumer.WithGroupName(configure.GROUP_NAME),
 		consumer.WithNsResolver(primitive.NewPassthroughResolver([]string{configure.RmqNameseverAddr})),
 	)
 	err = MyConsumer.Subscribe(rmqWalletTopic, consumer.MessageSelector{}, callbackWallet)
