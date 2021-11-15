@@ -20,7 +20,7 @@ type Envelope struct {
 
 // TableName 指定表名
 func (Envelope) TableName() string {
-	return "envelope"
+	return "envelope2"
 }
 
 func GetEnvelopesByUid(DB *gorm.DB, uid int64) []Envelope {
