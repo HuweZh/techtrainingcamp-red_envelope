@@ -31,7 +31,7 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 
 	if envelope.Value == 0 {
 		//没抢到红包
-		commons.R(c, commons.NOTGETONE, commons.SNATCHERROR, nil)
+		commons.R(c, commons.CODE_DID_NOT_SNATCH, commons.SNATCHERROR, nil)
 	} else {
 		//存入数据库
 		models.SetMysqlData(commons.INSERTENVELOPE, envelope)
@@ -46,7 +46,7 @@ func (con RedEnvelopeController) Snatch(c *gin.Context) {
 		}
 
 		//返回数据
-		commons.R(c, commons.OK, commons.SUCCESS, data)
+		commons.R(c, commons.CODE_SUCCESS, commons.SUCCESS, data)
 	}
 }
 
@@ -60,7 +60,7 @@ func (con RedEnvelopeController) Open(c *gin.Context) {
 	data := gin.H{
 		"value": envelope.Value,
 	}
-	commons.R(c, commons.OK, commons.SUCCESS, data)
+	commons.R(c, commons.CODE_SUCCESS, commons.SUCCESS, data)
 }
 
 //获取钱包列表业务逻辑
@@ -80,5 +80,5 @@ func (con RedEnvelopeController) GetWalletList(c *gin.Context) {
 		"amount":        amount,
 		"envelope_list": envelopes,
 	}
-	commons.R(c, commons.OK, commons.SUCCESS, data)
+	commons.R(c, commons.CODE_SUCCESS, commons.SUCCESS, data)
 }

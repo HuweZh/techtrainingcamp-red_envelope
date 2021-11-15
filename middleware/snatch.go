@@ -27,7 +27,7 @@ func SnatchMiddle(c *gin.Context) {
 		//返回数据
 		//此用户的红包抢完了
 		c.Abort()
-		commons.R(c, commons.NOCHANCE, commons.RUNOUTOF, nil)
+		commons.R(c, commons.CODE_OUT_OF_SNATCH_COUNT_ERROR, commons.RUNOUTOF, nil)
 	} else {
 		//更新用户的cur_count
 		user.CurCount += 1

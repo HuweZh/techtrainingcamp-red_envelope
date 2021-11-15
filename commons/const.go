@@ -18,11 +18,26 @@ const (
 
 //返回数据的状态码
 const (
-	OK         = 0 //正常
-	NOTGETONE  = 1 //没有抢到红包
-	REPEATOPEN = 2 //重复打开相同的红包
-	NOCHANCE   = 3 //没有抢红包的机会了
-	NOENVELOPE = 4 //此用户的钱包列表为空
+	CODE_SUCCESS                   = 0  //成功
+	CODE_NOT_LOGIN_ERROR           = 1  //用户未登录
+	CODE_PARAMETER_ERROR           = 2  //post参数错误
+	CODE_STRING_TO_INT_ERROR       = 3  //string转int错误
+	CODE_BINDJSON_ERROR            = 4  //绑定json错误
+	CODE_MARSHAL_ERROR             = 5  //string转json错误
+	CODE_UNMARSHAL_ERROR           = 6  //json解析错误
+	CODE_REDIS_GET_ERROR           = 7  //redis的get操作错误
+	CODE_REDIS_SET_ERROR           = 8  //redis的set操作错误
+	CODE_OUT_OF_REDENVELOPES_ERROR = 9  //总红包用尽
+	CODE_INSERT_DB_ERROR           = 10 //插入数据库错误
+	CODE_OUT_OF_SNATCH_COUNT_ERROR = 11 //抢红包次数用尽
+	CODE_ENVELOPE_NOT_EXIST_ERROR  = 12 //红包不存在
+	CODE_UPDATE_DB_ERROR           = 13 //更新数据库错误
+	CODE_OTHER_ERROR               = 14 //其他错误
+	CODE_SERVER_INTERNAL_ERROR     = 15 //服务器内部错误
+	CODE_DID_NOT_SNATCH            = 16 //抢红包失败
+	CODE_ADD_MONEY_ERROR           = 17 //添加总金额失败
+	CODE_REPEAT_ENVELOPE           = 18 //重复打开红包
+	CODE_NO_ENVELOPE               = 19 //用户没有红包
 )
 
 //返回数据的信息

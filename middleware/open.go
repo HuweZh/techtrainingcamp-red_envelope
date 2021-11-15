@@ -43,7 +43,7 @@ func OpenMiddle(c *gin.Context) {
 	if envelope.Opened == 1 {
 		c.Abort()
 		//红包已经打开过
-		commons.R(c, commons.REPEATOPEN, commons.OPENED, nil)
+		commons.R(c, commons.CODE_REPEAT_ENVELOPE, commons.OPENED, nil)
 	} else {
 		//先修改状态，再传入channel，再加入redis缓存
 		envelope.Opened = 1

@@ -41,7 +41,7 @@ func WalletMiddle(c *gin.Context) {
 	if len(envelopes) == 0 {
 		c.Abort()
 		//此用户没有红包
-		commons.R(c, commons.NOENVELOPE, commons.HAVEZERO, nil)
+		commons.R(c, commons.CODE_NO_ENVELOPE, commons.HAVEZERO, nil)
 	}
 
 	//中间件通信，设置值
